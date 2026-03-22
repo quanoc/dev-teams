@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: #0d0e11;
+    color: #e8eaf0;
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #13151a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #2a2f3a;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #383e4d;
+  }
+}
+
+@layer components {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #2a2f3a transparent;
+  }
+
+  /* 面板卡片样式 */
+  .panel {
+    @apply bg-bg-1 border border-line rounded-lg;
+  }
+
+  .panel-head {
+    @apply px-4 py-3 border-b border-line flex items-center gap-2;
+  }
+
+  .panel-title {
+    @apply text-[11px] font-semibold uppercase tracking-wide text-text-1;
+  }
+
+  .panel-body {
+    @apply p-4;
+  }
+
+  /* 导航项样式 */
+  .nav-item {
+    @apply flex items-center gap-2 px-2 py-1.5 rounded text-text-1 text-xs transition-all duration-150 cursor-pointer relative;
+  }
+
+  .nav-item:hover {
+    @apply bg-bg-3 text-text-0;
+  }
+
+  .nav-item.active {
+    @apply bg-bg-3 text-text-0;
+  }
+
+  .nav-item.active::before {
+    content: '';
+    @apply absolute left-0 top-1.5 bottom-1.5 w-0.5 bg-purple rounded-full;
+  }
+
+  /* Agent 行样式 */
+  .agent-row {
+    @apply flex items-center gap-1.5 px-2 py-1 rounded cursor-pointer;
+  }
+
+  .agent-row:hover {
+    @apply bg-bg-3;
+  }
+
+  /* 任务卡片 */
+  .task-card {
+    @apply bg-bg-1 border border-line rounded p-2 cursor-pointer transition-colors duration-150;
+  }
+
+  .task-card:hover {
+    @apply border-line-2;
+  }
+
+  /* 状态标签 */
+  .status-badge {
+    @apply text-[9px] font-mono px-1.5 py-0.5 rounded border;
+  }
+
+  /* Feed 项目 */
+  .feed-item {
+    @apply flex gap-2 py-2 border-b border-line last:border-b-0;
+  }
+
+  /* 输入框 */
+  .input-field {
+    @apply w-full bg-bg-2 border border-line-2 rounded px-3 py-2 text-xs text-text-0 outline-none transition-colors duration-150;
+  }
+
+  .input-field::placeholder {
+    @apply text-text-3;
+  }
+
+  .input-field:focus {
+    @apply border-purple;
+  }
+
+  /* 按钮 */
+  .btn {
+    @apply flex items-center gap-1 text-[11px] px-3 py-1.5 rounded cursor-pointer font-sans border-none transition-all duration-150;
+  }
+
+  .btn-primary {
+    @apply bg-purple text-white;
+  }
+
+  .btn-primary:hover {
+    @apply bg-[#8060f0];
+  }
+
+  /* 渐入动画 */
+  .animate-stagger-1 { animation: fadeUp 0.3s 0.05s ease both; }
+  .animate-stagger-2 { animation: fadeUp 0.3s 0.10s ease both; }
+  .animate-stagger-3 { animation: fadeUp 0.3s 0.15s ease both; }
+  .animate-stagger-4 { animation: fadeUp 0.3s 0.20s ease both; }
+  .animate-stagger-5 { animation: fadeUp 0.3s 0.25s ease both; }
+  .animate-stagger-6 { animation: fadeUp 0.3s 0.30s ease both; }
+}
+
+@layer utilities {
+  /* 文字截断 */
+  .text-ellipsis {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap;
+  }
+
+  /* Cyan 颜色 */
+  .bg-cyan-bg {
+    background-color: #083344;
+  }
+  .border-cyan-dark {
+    border-color: #0e7490;
+  }
+  .text-cyan {
+    color: #22d3ee;
+  }
+  .bg-cyan {
+    background-color: #22d3ee;
+  }
+}
