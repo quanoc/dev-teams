@@ -26,11 +26,11 @@ export function formatDuration(minutes: number): string {
 }
 
 export function isOverdue(elapsed: number, estimate: number): boolean {
-  return elapsed > estimate
+  return elapsed >= estimate
 }
 
 export function isWarning(elapsed: number, estimate: number): boolean {
-  return elapsed > estimate * 0.8
+  return elapsed >= estimate * 0.8
 }
 
 export function getDurationStatus(elapsed: number, estimate: number): 'normal' | 'warning' | 'overdue' {
