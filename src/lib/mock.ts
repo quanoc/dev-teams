@@ -1,6 +1,6 @@
 import type {
   Task, Agent, Activity, DoraMetrics, Member,
-  Stage, Message, Artifact
+  Stage, Message, Artifact, AgentLog, AgentSkill, AgentRecentTask, AgentId
 } from '@/types'
 
 // ─── Members ──────────────────────────────────────────────────────────────
@@ -291,4 +291,93 @@ export const MOCK_METRICS: DoraMetrics = {
   leadTimeTrend: 'down',
   failureRateTrend: 'down',
   mttrTrend: 'stable',
+}
+
+export const MOCK_AGENT_LOGS: AgentLog[] = [
+  { id: 'log1', agentId: 'requirement', level: 'info', message: '开始分析用户系统 v2 重构需求', timestamp: new Date(Date.now() - 120 * 60000).toISOString(), taskId: 't1', taskTitle: '用户系统 v2 重构' },
+  { id: 'log2', agentId: 'requirement', level: 'success', message: '识别到 4 个核心用户故事', timestamp: new Date(Date.now() - 115 * 60000).toISOString(), taskId: 't1', taskTitle: '用户系统 v2 重构' },
+  { id: 'log3', agentId: 'requirement', level: 'warning', message: '检测到 LDAP 兼容性约束，需要特别关注', timestamp: new Date(Date.now() - 100 * 60000).toISOString(), taskId: 't1', taskTitle: '用户系统 v2 重构' },
+  { id: 'log4', agentId: 'requirement', level: 'info', message: '需求文档草稿已生成，等待 PM 评审', timestamp: new Date(Date.now() - 90 * 60000).toISOString(), taskId: 't1', taskTitle: '用户系统 v2 重构' },
+  { id: 'log5', agentId: 'code', level: 'info', message: '开始定位登录超时问题', timestamp: new Date(Date.now() - 180 * 60000).toISOString(), taskId: 't3', taskTitle: '登录超时 Bug 修复' },
+  { id: 'log6', agentId: 'code', level: 'warning', message: 'session.middleware.ts 配置受环境变量影响', timestamp: new Date(Date.now() - 150 * 60000).toISOString(), taskId: 't3', taskTitle: '登录超时 Bug 修复' },
+  { id: 'log7', agentId: 'code', level: 'error', message: '缺少复现步骤，无法继续定位', timestamp: new Date(Date.now() - 120 * 60000).toISOString(), taskId: 't3', taskTitle: '登录超时 Bug 修复' },
+  { id: 'log8', agentId: 'test', level: 'info', message: '开始执行数据看板 v3 测试用例', timestamp: new Date(Date.now() - 120 * 60000).toISOString(), taskId: 't4', taskTitle: '数据看板 v3' },
+  { id: 'log9', agentId: 'test', level: 'success', message: '单元测试覆盖率 87%', timestamp: new Date(Date.now() - 60 * 60000).toISOString(), taskId: 't4', taskTitle: '数据看板 v3' },
+  { id: 'log10', agentId: 'test', level: 'success', message: '性能测试通过，P99 响应时间 340ms', timestamp: new Date(Date.now() - 30 * 60000).toISOString(), taskId: 't4', taskTitle: '数据看板 v3' },
+]
+
+export const MOCK_AGENT_SKILLS: Record<AgentId, AgentSkill[]> = {
+  main: [
+    { id: 'skill1', name: '任务调度', description: '智能分配任务到合适的 Agent', category: 'analysis', usageCount: 156, lastUsedAt: new Date(Date.now() - 5 * 60000).toISOString() },
+    { id: 'skill2', name: '进度跟踪', description: '实时监控各阶段进度', category: 'analysis', usageCount: 234, lastUsedAt: new Date(Date.now() - 2 * 60000).toISOString() },
+    { id: 'skill3', name: '风险预警', description: '识别潜在风险并提前预警', category: 'analysis', usageCount: 89, lastUsedAt: new Date(Date.now() - 30 * 60000).toISOString() },
+  ],
+  requirement: [
+    { id: 'skill4', name: '需求分析', description: '结构化分析用户需求', category: 'analysis', usageCount: 312, lastUsedAt: new Date(Date.now() - 10 * 60000).toISOString() },
+    { id: 'skill5', name: '用户故事拆解', description: '将需求拆解为可执行的用户故事', category: 'analysis', usageCount: 198, lastUsedAt: new Date(Date.now() - 20 * 60000).toISOString() },
+    { id: 'skill6', name: 'PRD 生成', description: '自动生成产品需求文档', category: 'documentation', usageCount: 145, lastUsedAt: new Date(Date.now() - 90 * 60000).toISOString() },
+  ],
+  architecture: [
+    { id: 'skill7', name: '架构设计', description: '设计系统架构和技术方案', category: 'analysis', usageCount: 87, lastUsedAt: new Date(Date.now() - 15 * 60000).toISOString() },
+    { id: 'skill8', name: 'API 设计', description: '定义 RESTful API 接口规范', category: 'coding', usageCount: 134, lastUsedAt: new Date(Date.now() - 25 * 60000).toISOString() },
+    { id: 'skill9', name: '数据库建模', description: '设计数据库模型和关系', category: 'analysis', usageCount: 92, lastUsedAt: new Date(Date.now() - 45 * 60000).toISOString() },
+  ],
+  code: [
+    { id: 'skill10', name: '代码生成', description: '根据需求生成高质量代码', category: 'coding', usageCount: 567, lastUsedAt: new Date(Date.now() - 3 * 60000).toISOString() },
+    { id: 'skill11', name: 'Bug 修复', description: '定位并修复代码缺陷', category: 'coding', usageCount: 234, lastUsedAt: new Date(Date.now() - 8 * 60000).toISOString() },
+    { id: 'skill12', name: '代码重构', description: '优化代码结构和性能', category: 'coding', usageCount: 156, lastUsedAt: new Date(Date.now() - 60 * 60000).toISOString() },
+    { id: 'skill13', name: '单元测试', description: '生成单元测试用例', category: 'testing', usageCount: 289, lastUsedAt: new Date(Date.now() - 12 * 60000).toISOString() },
+  ],
+  review: [
+    { id: 'skill14', name: '代码审查', description: '自动审查代码质量和规范', category: 'coding', usageCount: 423, lastUsedAt: new Date(Date.now() - 40 * 60000).toISOString() },
+    { id: 'skill15', name: '安全扫描', description: '检测潜在安全漏洞', category: 'testing', usageCount: 198, lastUsedAt: new Date(Date.now() - 45 * 60000).toISOString() },
+    { id: 'skill16', name: '性能分析', description: '分析代码性能瓶颈', category: 'analysis', usageCount: 145, lastUsedAt: new Date(Date.now() - 50 * 60000).toISOString() },
+  ],
+  test: [
+    { id: 'skill17', name: '测试用例生成', description: '自动生成测试用例', category: 'testing', usageCount: 345, lastUsedAt: new Date(Date.now() - 5 * 60000).toISOString() },
+    { id: 'skill18', name: '性能测试', description: '执行性能和压力测试', category: 'testing', usageCount: 178, lastUsedAt: new Date(Date.now() - 30 * 60000).toISOString() },
+    { id: 'skill19', name: '覆盖率分析', description: '分析测试覆盖率', category: 'analysis', usageCount: 267, lastUsedAt: new Date(Date.now() - 10 * 60000).toISOString() },
+  ],
+  deploy: [
+    { id: 'skill20', name: 'CI/CD 配置', description: '配置持续集成和部署流水线', category: 'deployment', usageCount: 89, lastUsedAt: new Date(Date.now() - 120 * 60000).toISOString() },
+    { id: 'skill21', name: '环境管理', description: '管理多环境配置', category: 'deployment', usageCount: 156, lastUsedAt: new Date(Date.now() - 180 * 60000).toISOString() },
+    { id: 'skill22', name: '监控配置', description: '配置系统监控和告警', category: 'deployment', usageCount: 67, lastUsedAt: new Date(Date.now() - 240 * 60000).toISOString() },
+  ],
+}
+
+export const MOCK_AGENT_RECENT_TASKS: Record<AgentId, AgentRecentTask[]> = {
+  main: [
+    { taskId: 't1', taskTitle: '用户系统 v2 重构', status: 'active', duration: 180, type: 'requirement' },
+    { taskId: 't2', taskTitle: '支付模块重构', status: 'waiting', duration: 120, type: 'feature' },
+    { taskId: 't3', taskTitle: '登录超时 Bug 修复', status: 'active', duration: 90, type: 'bug' },
+  ],
+  requirement: [
+    { taskId: 't1', taskTitle: '用户系统 v2 重构', status: 'active', duration: 210, type: 'requirement' },
+    { taskId: 't7', taskTitle: '消息推送系统', status: 'done', completedAt: new Date(Date.now() - 24 * 3600000).toISOString(), duration: 120, type: 'feature' },
+    { taskId: 't4', taskTitle: '数据看板 v3', status: 'done', completedAt: new Date(Date.now() - 7 * 24 * 3600000).toISOString(), duration: 480, type: 'feature' },
+  ],
+  architecture: [
+    { taskId: 't7', taskTitle: '消息推送系统', status: 'active', duration: 180, type: 'feature' },
+    { taskId: 't1', taskTitle: '用户系统 v2 重构', status: 'active', duration: 90, type: 'requirement' },
+    { taskId: 't4', taskTitle: '数据看板 v3', status: 'done', completedAt: new Date(Date.now() - 7 * 24 * 3600000).toISOString(), duration: 960, type: 'feature' },
+  ],
+  code: [
+    { taskId: 't3', taskTitle: '登录超时 Bug 修复', status: 'active', duration: 190, type: 'bug' },
+    { taskId: 't2', taskTitle: '支付模块重构', status: 'done', completedAt: new Date(Date.now() - 2 * 3600000).toISOString(), duration: 2880, type: 'feature' },
+    { taskId: 't4', taskTitle: '数据看板 v3', status: 'done', completedAt: new Date(Date.now() - 2 * 24 * 3600000).toISOString(), duration: 4320, type: 'feature' },
+  ],
+  review: [
+    { taskId: 't2', taskTitle: '支付模块重构', status: 'waiting', duration: 160, type: 'feature' },
+    { taskId: 't4', taskTitle: '数据看板 v3', status: 'done', completedAt: new Date(Date.now() - 15 * 3600000).toISOString(), duration: 840, type: 'feature' },
+    { taskId: 't5', taskTitle: '修复导航栏移动端样式', status: 'done', completedAt: new Date(Date.now() - 17.5 * 3600000).toISOString(), duration: 60, type: 'bug' },
+  ],
+  test: [
+    { taskId: 't4', taskTitle: '数据看板 v3', status: 'active', duration: 240, type: 'feature' },
+    { taskId: 't2', taskTitle: '支付模块重构', status: 'pending', duration: 0, type: 'feature' },
+    { taskId: 't5', taskTitle: '修复导航栏移动端样式', status: 'done', completedAt: new Date(Date.now() - 14 * 3600000).toISOString(), duration: 30, type: 'bug' },
+  ],
+  deploy: [
+    { taskId: 't5', taskTitle: '修复导航栏移动端样式', status: 'done', completedAt: new Date(Date.now() - 9 * 3600000).toISOString(), duration: 60, type: 'bug' },
+    { taskId: 't4', taskTitle: '数据看板 v3', status: 'pending', duration: 0, type: 'feature' },
+  ],
 }

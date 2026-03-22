@@ -2,7 +2,9 @@ import { TopBar } from '@/components/layout/TopBar'
 import { ActivityFeed } from '@/components/agents/ActivityFeed'
 import { DoraMetrics } from '@/components/agents/DoraMetrics'
 import { AgentTeamHeader } from '@/components/agents/AgentTeamHeader'
+import { AgentDetailPanel } from '@/components/agents/AgentDetailPanel'
 import { useTaskStore } from '@/stores/taskStore'
+import { useAgentStore } from '@/stores/agentStore'
 import { TrendingUp, TrendingDown, Minus, CheckCircle2, Circle, AlertCircle, Clock, Cpu, Users, Zap, AlertTriangle, Lightbulb, Bug } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -58,6 +60,7 @@ const ALERTS = [
 
 export function Overview() {
   const tasks = useTaskStore((s) => s.tasks)
+  const selectedAgentId = useAgentStore((s) => s.selectedAgentId)
 
   return (
     <div className="flex flex-col h-full">
@@ -66,103 +69,97 @@ export function Overview() {
         subtitle={new Date().toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' })}
       />
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
-        {/* 1️⃣ AI 研发团队 Agent状态栏 */}
-        <AgentTeamHeader />
+      <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+          <AgentTeamHeader />
 
-        {/* 2️⃣ 今日概览 - 4个关键数字卡片 */}
-        <div className="grid grid-cols-4 gap-3">
-          {TODAY_STATS.map((stat, idx) => (
-            <div
-              key={stat.label}
-              className={cn(
-                'panel p-4 flex items-center gap-3',
-                idx === 0 && 'animate-stagger-2',
-                idx === 1 && 'animate-stagger-3',
-                idx === 2 && 'animate-stagger-4',
-                idx === 3 && 'animate-stagger-5'
-              )}
-            >
-              <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', stat.bgColor)}>
-                <stat.icon className={cn('w-5 h-5', stat.color)} />
+          <div className="grid grid-cols-4 gap-3">
+            {TODAY_STATS.map((stat, idx) => (
+              <div
+                key={stat.label}
+                className={cn(
+                  'panel p-4 flex items-center gap-3',
+                  idx === 0 && 'animate-stagger-2',
+                  idx === 1 && 'animate-stagger-3',
+                  idx === 2 && 'animate-stagger-4',
+                  idx === 3 && 'animate-stagger-5'
+                )}
+              >
+                <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', stat.bgColor)}>
+                  <stat.icon className={cn('w-5 h-5', stat.color)} />
+                </div>
+                <div>
+                  <div className="text-[10px] text-text-2 mb-0.5">{stat.label}</div>
+                  <div className="text-xl font-mono font-semibold text-text-0">{stat.value}</div>
+                </div>
               </div>
-              <div>
-                <div className="text-[10px] text-text-2 mb-0.5">{stat.label}</div>
-                <div className="text-xl font-mono font-semibold text-text-0">{stat.value}</div>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        {/* 3️⃣ & 4️⃣ 实时流水线 + Agent负载（左右分栏） */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* 实时流水线 */}
-          <div className="panel animate-stagger-3">
-            <div className="panel-head">
-              <span className="panel-title">🔄 实时流水线</span>
-              <span className="panel-action">查看全部 12个任务</span>
-            </div>
-            <div className="panel-body space-y-3">
-              {PIPELINE_TASKS.map((task) => (
-                <div key={task.id} className="p-3 bg-bg-2 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[10px] font-mono text-text-2">{task.id}</span>
-                    <span className="text-xs text-text-0">{task.title}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {task.steps.map((step, idx) => (
-                      <div key={idx} className="flex items-center">
-                        <div
-                          className={cn(
-                            'px-1.5 py-0.5 rounded text-[9px] whitespace-nowrap',
-                            step.status === 'done' && 'bg-green-bg text-green',
-                            step.status === 'running' && 'bg-blue-bg text-blue animate-pulse',
-                            step.status === 'pending' && 'bg-bg-3 text-text-3'
+          <div className="grid grid-cols-2 gap-4">
+            <div className="panel animate-stagger-3">
+              <div className="panel-head">
+                <span className="panel-title">🔄 实时流水线</span>
+                <span className="panel-action">查看全部 12个任务</span>
+              </div>
+              <div className="panel-body space-y-3">
+                {PIPELINE_TASKS.map((task) => (
+                  <div key={task.id} className="p-3 bg-bg-2 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[10px] font-mono text-text-2">{task.id}</span>
+                      <span className="text-xs text-text-0">{task.title}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {task.steps.map((step, idx) => (
+                        <div key={idx} className="flex items-center">
+                          <div
+                            className={cn(
+                              'px-1.5 py-0.5 rounded text-[9px] whitespace-nowrap',
+                              step.status === 'done' && 'bg-green-bg text-green',
+                              step.status === 'running' && 'bg-blue-bg text-blue animate-pulse',
+                              step.status === 'pending' && 'bg-bg-3 text-text-3'
+                            )}
+                          >
+                            {step.agent}
+                            {step.status === 'done' && '✓'}
+                            {step.status === 'running' && '▶'}
+                          </div>
+                          {idx < task.steps.length - 1 && (
+                            <div className="w-3 h-px bg-line mx-0.5" />
                           )}
-                        >
-                          {step.agent}
-                          {step.status === 'done' && '✓'}
-                          {step.status === 'running' && '▶'}
                         </div>
-                        {idx < task.steps.length - 1 && (
-                          <div className="w-3 h-px bg-line mx-0.5" />
-                        )}
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Agent负载 */}
-          <div className="panel animate-stagger-4">
-            <div className="panel-head">
-              <span className="panel-title">📊 Agent负载</span>
-            </div>
-            <div className="panel-body space-y-3">
-              {AGENT_WORKLOAD.map((agent) => (
-                <div key={agent.name} className="flex items-center gap-3">
-                  <div className="w-12 text-[11px] text-text-0">{agent.name}</div>
-                  <div className="w-10 text-[9px] text-text-2">{agent.role}</div>
-                  <div className="flex-1 h-2 bg-bg-3 rounded-full overflow-hidden">
-                    <div
-                      className={cn('h-full rounded-full', agent.color)}
-                      style={{ width: `${(agent.load / agent.max) * 100}%` }}
-                    />
+            <div className="panel animate-stagger-4">
+              <div className="panel-head">
+                <span className="panel-title">📊 Agent负载</span>
+              </div>
+              <div className="panel-body space-y-3">
+                {AGENT_WORKLOAD.map((agent) => (
+                  <div key={agent.name} className="flex items-center gap-3">
+                    <div className="w-12 text-[11px] text-text-0">{agent.name}</div>
+                    <div className="w-10 text-[9px] text-text-2">{agent.role}</div>
+                    <div className="flex-1 h-2 bg-bg-3 rounded-full overflow-hidden">
+                      <div
+                        className={cn('h-full rounded-full', agent.color)}
+                        style={{ width: `${(agent.load / agent.max) * 100}%` }}
+                      />
+                    </div>
+                    <div className="w-12 text-right text-[10px] font-mono text-text-2">
+                      {agent.load}/{agent.max}
+                    </div>
                   </div>
-                  <div className="w-12 text-right text-[10px] font-mono text-text-2">
-                    {agent.load}/{agent.max}
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </div>
 
-        {/* 5️⃣ & 6️⃣ 人机协作指标 + 效能与资源（左右分栏） */}
         <div className="grid grid-cols-2 gap-4">
-          {/* 人机协作指标 */}
           <div className="panel animate-stagger-5">
             <div className="panel-head">
               <span className="panel-title">👥 人机协作</span>
@@ -199,7 +196,6 @@ export function Overview() {
             </div>
           </div>
 
-          {/* 效能与资源 */}
           <div className="panel animate-stagger-6">
             <div className="panel-head">
               <span className="panel-title">⚡ 效能与资源</span>
@@ -239,7 +235,6 @@ export function Overview() {
           </div>
         </div>
 
-        {/* 7️⃣ 异常与告警 */}
         <div className="panel animate-stagger-6">
           <div className="panel-head">
             <span className="panel-title">⚠️ 需要关注</span>
@@ -288,31 +283,37 @@ export function Overview() {
         </div>
       </div>
 
-      {/* Input Bar */}
-      <div className="px-5 py-2.5 border-t border-line bg-bg-1 flex gap-2 items-end flex-shrink-0">
-        <div className="flex gap-1 flex-wrap mb-1.5">
-          {['@小析', '@码哥', '@小质'].map((chip) => (
-            <button
-              key={chip}
-              className="text-[10px] font-mono px-2 py-0.5 rounded border border-line-2 text-text-2 hover:border-purple hover:text-purple transition-colors"
-            >
-              {chip}
-            </button>
-          ))}
+      {selectedAgentId && (
+        <div className="w-[380px] border-l border-line bg-bg-1 overflow-y-auto">
+          <AgentDetailPanel />
         </div>
-        <div className="flex-1">
-          <input
-            type="text"
-            placeholder="输入指令或问题..."
-            className="input-field"
-          />
-        </div>
-        <button className="w-8 h-8 bg-purple rounded flex items-center justify-center flex-shrink-0 hover:bg-[#8060f0] transition-colors">
-          <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 14 14" fill="none">
-            <path d="M2 7h10M7 2v10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </button>
-      </div>
+      )}
     </div>
+
+    <div className="px-5 py-2.5 border-t border-line bg-bg-1 flex gap-2 items-end flex-shrink-0">
+      <div className="flex gap-1 flex-wrap mb-1.5">
+        {['@小析', '@码哥', '@小质'].map((chip) => (
+          <button
+            key={chip}
+            className="text-[10px] font-mono px-2 py-0.5 rounded border border-line-2 text-text-2 hover:border-purple hover:text-purple transition-colors"
+          >
+            {chip}
+          </button>
+        ))}
+      </div>
+      <div className="flex-1">
+        <input
+          type="text"
+          placeholder="输入指令或问题..."
+          className="input-field"
+        />
+      </div>
+      <button className="w-8 h-8 bg-purple rounded flex items-center justify-center flex-shrink-0 hover:bg-[#8060f0] transition-colors">
+        <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 14 14" fill="none">
+          <path d="M2 7h10M7 2v10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </button>
+    </div>
+  </div>
   )
 }

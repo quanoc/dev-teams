@@ -77,6 +77,45 @@ export interface Agent {
   lastActiveAt: string
 }
 
+export interface AgentLog {
+  id: string
+  agentId: AgentId
+  level: 'info' | 'warning' | 'error' | 'success'
+  message: string
+  timestamp: string
+  taskId?: string
+  taskTitle?: string
+}
+
+export interface AgentSkill {
+  id: string
+  name: string
+  description: string
+  category: 'analysis' | 'coding' | 'testing' | 'deployment' | 'documentation'
+  usageCount: number
+  lastUsedAt: string
+}
+
+export interface AgentRecentTask {
+  taskId: string
+  taskTitle: string
+  status: TaskStatus
+  completedAt?: string
+  duration: number
+  type: TaskType
+}
+
+export interface OpenClawLog {
+  id: string
+  timestamp: string
+  agentId: AgentId
+  level: 'info' | 'warning' | 'error' | 'success'
+  message: string
+  taskId?: string
+  taskTitle?: string
+  metadata?: Record<string, unknown>
+}
+
 // ─── Message ──────────────────────────────────────────────────────────────
 
 export type MessageSender = 'agent' | 'human'

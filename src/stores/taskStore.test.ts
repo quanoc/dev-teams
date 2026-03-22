@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { useTaskStore } from './taskStore'
 import { MOCK_TASKS } from '@/lib/mock'
 
