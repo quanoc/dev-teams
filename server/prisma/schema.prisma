@@ -1,0 +1,87 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Agent {
+  id          String   @id
+  name        String
+  type        String
+  status      String
+  color       String
+  icon        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  tasks       Task[]
+  logs        Log[]
+  skills      AgentSkill[]
+}
+
+model Task {
+  id          String   @id
+  title       String
+  type        String
+  status      String
+  priority    String
+  agentId     String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  stages      Stage[]
+  logs        Log[]
+}
+
+model Stage {
+  id        String   @id
+  taskId    String
+  name      String
+  status    String
+  order     Int
+  createdAt DateTime @default(now())
+  
+  task      Task     @relation(fields: [taskId], references: [id])
+  messages  Message[]
+}
+
+model Message {
+  id        String   @id
+  stageId   String
+  content   String
+  type      String
+  createdAt DateTime @default(now())
+  
+  stage     Stage    @relation(fields: [stageId], references: [id])
+}
+
+model Log {
+  id        String   @id
+  agentId   String
+  taskId    String?
+  level     String
+  message   String
+  timestamp DateTime @default(now())
+  metadata  String?
+  
+  agent     Agent    @relation(fields: [agentId], references: [id])
+  task      Task?    @relation(fields: [taskId], references: [id])
+}
+
+model AgentSkill {
+  id          String   @id
+  agentId     String
+  name        String
+  version     String
+  description String?
+  enabled     Boolean  @default(true)
+  installedAt DateTime @default(now())
+  
+  agent       Agent    @relation(fields: [agentId], references: [id])
+}

@@ -1,6 +1,7 @@
-import { X, FileText, CheckCircle2, Clock, AlertCircle, Info, AlertTriangle, CheckCircle, Zap, Code, TestTube, Rocket, BookOpen } from 'lucide-react'
+import { X, FileText, CheckCircle2, Clock, AlertCircle, Info, AlertTriangle, CheckCircle, Zap, Code, TestTube, Rocket, BookOpen, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAgentStore } from '@/stores/agentStore'
+import { useAgentLogs } from '@/hooks/useAgentLogs'
 import type { AgentId, AgentLog, AgentSkill, AgentRecentTask } from '@/types'
 
 const AGENT_NAMES: Record<AgentId, string> = {
@@ -151,9 +152,10 @@ function RecentTaskItem({ task }: { task: AgentRecentTask }) {
 export function AgentDetailPanel() {
   const selectedAgentId = useAgentStore((s) => s.selectedAgentId)
   const selectAgent = useAgentStore((s) => s.selectAgent)
-  const getAgentLogs = useAgentStore((s) => s.getAgentLogs)
   const getAgentSkills = useAgentStore((s) => s.getAgentSkills)
   const getAgentRecentTasks = useAgentStore((s) => s.getAgentRecentTasks)
+  
+  const { logs, isLoading, error, refreshLogs } = useAgentLogs(selectedAgentId)
   
   if (!selectedAgentId) {
     return (
@@ -166,7 +168,6 @@ export function AgentDetailPanel() {
     )
   }
   
-  const logs = getAgentLogs(selectedAgentId)
   const skills = getAgentSkills(selectedAgentId)
   const recentTasks = getAgentRecentTasks(selectedAgentId)
   
@@ -192,13 +193,30 @@ export function AgentDetailPanel() {
                 <Clock className="w-3.5 h-3.5" />
                 运行日志
               </span>
-              <span className="text-[10px] text-text-2">{logs.length} 条</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-text-2">{logs.length} 条</span>
+                <button
+                  onClick={refreshLogs}
+                  disabled={isLoading}
+                  className="w-5 h-5 rounded hover:bg-bg-2 flex items-center justify-center text-text-2 hover:text-text-0 transition-colors disabled:opacity-50"
+                  title="刷新日志"
+                >
+                  <RefreshCw className={cn('w-3 h-3', isLoading && 'animate-spin')} />
+                </button>
+              </div>
             </div>
             <div className="panel-body">
+              {error && (
+                <div className="text-xs text-red text-center py-2 mb-2">
+                  {error}
+                </div>
+              )}
               {logs.length > 0 ? (
                 logs.map((log) => <LogItem key={log.id} log={log} />)
               ) : (
-                <div className="text-xs text-text-2 text-center py-4">暂无日志</div>
+                <div className="text-xs text-text-2 text-center py-4">
+                  {isLoading ? '加载中...' : '暂无日志'}
+                </div>
               )}
             </div>
           </div>

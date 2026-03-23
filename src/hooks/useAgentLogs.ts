@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
-import { openClawService } from '@/services/openclaw'
-import type { OpenClawLog } from '@/types'
-import type { AgentId } from '@/types'
+import { apiClient } from '@/services/api'
+import type { AgentId, OpenClawLog } from '@/types'
 
-export function useOpenClawLogs(agentId: AgentId | null) {
+export function useAgentLogs(agentId: AgentId | null) {
   const [logs, setLogs] = useState<OpenClawLog[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -22,7 +21,7 @@ export function useOpenClawLogs(agentId: AgentId | null) {
       setError(null)
 
       try {
-        const initialLogs = await openClawService.getAgentLogs(agentId, 50)
+        const initialLogs = await apiClient.getAgentLogs(agentId, 50, 'file')
         if (isMounted) {
           setLogs(initialLogs.reverse())
         }
@@ -38,9 +37,9 @@ export function useOpenClawLogs(agentId: AgentId | null) {
     }
 
     const subscribeToLiveLogs = () => {
-      unsubscribe = openClawService.subscribeToLogs((log: OpenClawLog) => {
-        if (isMounted && log.agentId === agentId) {
-          setLogs(prev => [log, ...prev].slice(0, 100))
+      unsubscribe = apiClient.subscribeToAgentLogs(agentId, (newLog) => {
+        if (isMounted) {
+          setLogs((prev) => [newLog, ...prev].slice(0, 100))
         }
       })
     }
@@ -67,7 +66,7 @@ export function useOpenClawLogs(agentId: AgentId | null) {
     setError(null)
 
     try {
-      const freshLogs = await openClawService.getAgentLogs(agentId, 50)
+      const freshLogs = await apiClient.getAgentLogs(agentId, 50, 'file')
       setLogs(freshLogs.reverse())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to refresh logs')
@@ -87,14 +86,13 @@ export function useOpenClawLogs(agentId: AgentId | null) {
 
 export function useOpenClawStatus() {
   const [isConnected, setIsConnected] = useState(false)
-  const [agents, setAgents] = useState<any[]>([])
 
   useEffect(() => {
     let isMounted = true
 
     const checkStatus = async () => {
       try {
-        const status = await openClawService.getGatewayStatus()
+        const status = await apiClient.getOpenClawStatus()
         if (isMounted) {
           setIsConnected(status?.gateway === 'running')
         }
@@ -115,5 +113,5 @@ export function useOpenClawStatus() {
     }
   }, [])
 
-  return { isConnected, agents }
+  return { isConnected }
 }

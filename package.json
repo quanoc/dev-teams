@@ -4,9 +4,17 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev": "concurrently \"pnpm run dev:frontend\" \"pnpm run dev:backend\"",
+    "dev:frontend": "vite",
+    "dev:backend": "cd server && pnpm run dev",
+    "build": "pnpm run build:frontend && pnpm run build:backend",
+    "build:frontend": "tsc && vite build",
+    "build:backend": "cd server && pnpm run build",
+    "preview": "vite preview",
+    "start": "cd server && pnpm run start",
+    "db:generate": "cd server && pnpm run db:generate",
+    "db:migrate": "cd server && pnpm run db:migrate",
+    "db:studio": "cd server && pnpm run db:studio"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -15,6 +23,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1",
+    "socket.io-client": "^4.7.5",
     "zustand": "^4.5.4"
   },
   "devDependencies": {
@@ -27,6 +36,7 @@
     "@vitest/coverage-v8": "^1.6.0",
     "@vitest/ui": "1.6.0",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^8.2.2",
     "jsdom": "^29.0.1",
     "postcss": "^8.4.41",
     "tailwindcss": "^3.4.10",
